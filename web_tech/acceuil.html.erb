@@ -1,0 +1,35 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+  <h1>テスト！！！！！！！！！！！！！</h1>
+  <% require 'pg' %>
+  <% connection = PG::connect(dbname: "goya") %>
+  <% connection.internal_encoding = "UTF-8" %>
+  <h3> Les informations de Goya </h3>
+  <% goyas_res = connection.exec("select * from crops where give_for !='自家消費';")%>
+  <% goyas=[] %>
+  <% goyas_res.each do |goya| %>
+    <% goyas <<"length: #{goya["length"]}, weigth: #{goya["weight"]}, quality: #{goya["quality"]}, give_for: #{goya["give_for"]}, date: #{goya["date"]} " %>
+  <% end %>
+  <form action="validation.cgi" method="POST">
+     <br><br>
+    <input type="text"  name="allGoya" value="<%= goyas.join(' ') %>"><br>
+    <input type="submit" name="Soumettre" >
+  </form>
+  <% goyas_resM = connection.exec("select * from crops where quality ='f';")%>
+  <% goyasM=[] %>
+  <% goyas_resM.each do |goya| %>
+    <% goyasM <<"length: #{goya["length"]}, weigth: #{goya["weight"]}, quality: #{goya["quality"]}, give_for: #{goya["give_for"]}, date: #{goya["date"]} " %>
+  <% end %>
+  <form action="goyaM.cgi" method="POST">
+  <h3>Les Goya de mauvaises qualités </h>
+     <br><br>
+     <!-- valueには、送りたいデータを代入する -->
+     <!-- name="goya"を、情報の目印とする -->
+    <input type="text" name="badGoya" value="<%= goyasM.join(' ') %>">
+    <input type="submit" name="Soumettre" >
+  </form>
+</body>
+</html>
